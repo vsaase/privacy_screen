@@ -1,7 +1,3 @@
-# This plugin is no longer maintained
-
-This plugin is no longer maintained. Please use at your own risk.
-
 # privacy_screen
 
 Flutter plugin to provide a privacy screen feature (hide content when app is in background)
@@ -9,6 +5,15 @@ Flutter plugin to provide a privacy screen feature (hide content when app is in 
 Plugin in iOS is in swift
 
 Plugin in Android is in Kotlin
+
+## Requirements
+
+- Flutter 3.3.0 or later
+- Dart 3.6.0 or later
+- iOS 13.0 or later
+- Android minSdk 21 or later
+
+The iOS implementation supports both Swift Package Manager and CocoaPods.
 
 **This plugin used native app lifeCycles instead of flutter's to ensure it works when flutter entered a native view (eg: from a native plugin)**
 

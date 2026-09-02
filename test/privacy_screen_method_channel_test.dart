@@ -1,24 +1,46 @@
-// import 'package:flutter/services.dart';
-// import 'package:flutter_test/flutter_test.dart';
-// import 'package:privacy_screen/src/privacy_screen_method_channel.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:privacy_screen/src/privacy_helpers.dart';
+import 'package:privacy_screen/src/privacy_screen_method_channel.dart';
 
-// void main() {
-//   MethodChannelPrivacyScreen platform = MethodChannelPrivacyScreen();
-//   const MethodChannel channel = MethodChannel('privacy_screen');
+void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
 
-//   TestWidgetsFlutterBinding.ensureInitialized();
+  final MethodChannelPrivacyScreen platform = MethodChannelPrivacyScreen();
 
-//   setUp(() {
-//     channel.setMockMethodCallHandler((MethodCall methodCall) async {
-//       return '42';
-//     });
-//   });
+  test('sends the native configuration', () async {
+    MethodCall? call;
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(platform.methodChannel, (methodCall) async {
+      call = methodCall;
+      return true;
+    });
 
-//   tearDown(() {
-//     channel.setMockMethodCallHandler(null);
-//   });
+    final result = await platform.updateConfig(
+      iosOptions: const PrivacyIosOptions(
+        privacyImageName: 'PrivacyImage',
+        autoLockAfterSeconds: 5,
+      ),
+      androidOptions: const PrivacyAndroidOptions(autoLockAfterSeconds: 10),
+      backgroundColor: const Color(0x80402010),
+      blurEffect: PrivacyBlurEffect.dark,
+    );
 
-//   // test('getPlatformVersion', () async {
-//   //   expect(await platform.getPlatformVersion(), '42');
-//   // });
-// }
+    expect(result, isTrue);
+    expect(call?.method, 'updateConfig');
+    expect(call?.arguments, <String, Object?>{
+      'iosLockWithDidEnterBackground': true,
+      'privacyImageName': 'PrivacyImage',
+      'blurEffect': 'dark',
+      'backgroundColor': '#402010',
+      'backgroundOpacity': closeTo(0.5, 0.01),
+      'enablePrivacyIos': true,
+      'autoLockAfterSecondsIos': 5,
+      'enableSecureAndroid': true,
+      'autoLockAfterSecondsAndroid': 10,
+    });
+
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(platform.methodChannel, null);
+  });
+}

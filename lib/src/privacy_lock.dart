@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 
 class PrivacyLockWidget extends StatefulWidget {
   const PrivacyLockWidget({
-    Key? key,
+    super.key,
     this.lockBuilder,
     required this.blurColor,
     required this.backgroundColor,
     required this.blurRadius,
     required this.animation,
-  }) : super(key: key);
+  });
 
   // final Widget? child;
   final Color backgroundColor;
@@ -54,7 +54,7 @@ class _PrivacyLockWidgetState extends State<PrivacyLockWidget> {
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: widget.animation,
-      builder: (ctx, _) => _blurBuilder(
+      builder: (context, child) => _blurBuilder(
         child: Opacity(
           opacity: widget.animation.value,
           child: Material(

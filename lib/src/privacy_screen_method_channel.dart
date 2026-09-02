@@ -16,8 +16,8 @@ class MethodChannelPrivacyScreen extends PrivacyScreenPlatform {
     required Color backgroundColor,
     required PrivacyBlurEffect blurEffect,
   }) {
-    double backgroundOpacity = backgroundColor.opacity;
-    Color backgroundColorSolid = backgroundColor.withOpacity(1);
+    final double backgroundOpacity = backgroundColor.a;
+    final Color backgroundColorSolid = backgroundColor.withValues(alpha: 1);
     return methodChannel.invokeMethod<bool>(
       'updateConfig',
       {
@@ -26,7 +26,7 @@ class MethodChannelPrivacyScreen extends PrivacyScreenPlatform {
         'privacyImageName': iosOptions.privacyImageName,
         'blurEffect': blurEffect.name,
         'backgroundColor':
-            '#${backgroundColorSolid.value.toRadixString(16).substring(2, 8)}',
+            '#${backgroundColorSolid.toARGB32().toRadixString(16).substring(2, 8)}',
         'backgroundOpacity': backgroundOpacity,
         'enablePrivacyIos': iosOptions.enablePrivacy,
         'autoLockAfterSecondsIos': iosOptions.autoLockAfterSeconds,

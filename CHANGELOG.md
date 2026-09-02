@@ -1,3 +1,10 @@
+## 0.1.0 - Sep 2, 2026
+
+- Added iOS Swift Package Manager support.
+- Raised the minimum iOS version to 13.0 and updated the privacy overlay for multi-scene apps.
+- Updated Android build tooling, SDK, Java, Kotlin, and lifecycle dependency baselines.
+- Raised the minimum Flutter SDK to 3.3.0 and Dart SDK to 3.6.0.
+
 ## 0.0.8 - Aug 17, 2022
 
 - PR merged (not verified). Plugin is no longer maintained, use at own risk

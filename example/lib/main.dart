@@ -7,7 +7,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({Key? key}) : super(key: key);
+  MyApp({super.key});
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   @override
@@ -18,9 +18,9 @@ class MyApp extends StatelessWidget {
         return PrivacyGate(
           lockBuilder: (ctx) => const LockerPage(),
           navigatorKey: navigatorKey,
-          onLifeCycleChanged: (value) => print(value),
-          onLock: () => print("onLock"),
-          onUnlock: () => print("onUnlock"),
+          onLifeCycleChanged: (_) {},
+          onLock: () {},
+          onUnlock: () {},
           child: child,
         );
       },
@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
 }
 
 class FirstRoute extends StatefulWidget {
-  const FirstRoute({Key? key}) : super(key: key);
+  const FirstRoute({super.key});
 
   @override
   State<FirstRoute> createState() => _FirstRouteState();
@@ -82,7 +82,7 @@ class _FirstRouteState extends State<FirstRoute> {
                           enableSecure: true,
                           autoLockAfterSeconds: 5,
                         ),
-                        backgroundColor: Colors.white.withOpacity(0),
+                        backgroundColor: Colors.white.withValues(alpha: 0),
                         blurEffect: PrivacyBlurEffect.extraLight,
                       );
                     },
@@ -101,7 +101,7 @@ class _FirstRouteState extends State<FirstRoute> {
                           enableSecure: true,
                           autoLockAfterSeconds: 5,
                         ),
-                        backgroundColor: Colors.white.withOpacity(0),
+                        backgroundColor: Colors.white.withValues(alpha: 0),
                         blurEffect: PrivacyBlurEffect.light,
                       );
                     },
@@ -120,7 +120,7 @@ class _FirstRouteState extends State<FirstRoute> {
                           enableSecure: true,
                           autoLockAfterSeconds: 5,
                         ),
-                        backgroundColor: Colors.red.withOpacity(0.4),
+                        backgroundColor: Colors.red.withValues(alpha: 0.4),
                         blurEffect: PrivacyBlurEffect.dark,
                       );
                     },
@@ -164,11 +164,15 @@ class _FirstRouteState extends State<FirstRoute> {
 }
 
 class LockerPage extends StatelessWidget {
-  const LockerPage({Key? key}) : super(key: key);
+  const LockerPage({super.key});
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) {
+          return;
+        }
         var result = await showDialog(
           context: context,
           builder: (ctx) => Dialog(
@@ -211,7 +215,6 @@ class LockerPage extends StatelessWidget {
         if (result == true) {
           PrivacyScreen.instance.unlock();
         }
-        return false;
       },
       child: Padding(
         padding: const EdgeInsets.all(16.0),

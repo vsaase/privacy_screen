@@ -5,14 +5,14 @@ import 'privacy_screen.dart';
 
 class PrivacyGate extends StatefulWidget {
   const PrivacyGate({
-    Key? key,
+    super.key,
     this.child,
     this.lockBuilder,
     this.navigatorKey,
     this.onLock,
     this.onUnlock,
     this.onLifeCycleChanged,
-  }) : super(key: key);
+  });
 
   /// This is your main app
   final Widget? child;
@@ -50,7 +50,7 @@ class _PrivacyGateState extends State<PrivacyGate>
   PrivacyBlurEffect _blurEffect = PrivacyBlurEffect.none;
   Color _backgroundColor = const Color(0xffffffff);
 
-  Route? _lockerRoute;
+  Route<void>? _lockerRoute;
 
   @override
   void initState() {
@@ -98,14 +98,15 @@ class _PrivacyGateState extends State<PrivacyGate>
     widget.onLifeCycleChanged?.call(PrivacyScreen.instance.appLifeCycle);
   }
 
-  Future _toLockPage() async {
+  Future<void> _toLockPage() async {
     if (!(_lockerRoute?.isActive ?? false)) {
-      _lockerRoute = PageRouteBuilder(
-        pageBuilder: (ctx, _, __) => PrivacyLockWidget(
+      _lockerRoute = PageRouteBuilder<void>(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            PrivacyLockWidget(
           blurColor: _blurColor,
           blurRadius: _blurRadius,
           backgroundColor: _backgroundColor,
-          animation: _,
+          animation: animation,
           lockBuilder: widget.lockBuilder,
         ),
         transitionDuration: Duration.zero,
@@ -113,15 +114,13 @@ class _PrivacyGateState extends State<PrivacyGate>
         fullscreenDialog: true,
         opaque: false,
       );
-      return await widget.navigatorKey!.currentState?.push(_lockerRoute!);
+      await widget.navigatorKey!.currentState?.push<void>(_lockerRoute!);
     }
-    return true;
   }
 
   void _doLock() {
     if (widget.lockBuilder != null) {
       if (widget.navigatorKey?.currentState != null) {
-        print("_toLockPage");
         _toLockPage();
       } else {
         if (_lockVisibilityCtrl.value != 1) {

@@ -1,11 +1,11 @@
 name: privacy_screen
 description: A plugin for hiding sensitive data when app is in app switcher and in background. It also provides automatic lock triggers with native lifeCycle listeners.
-version: 0.0.8
+version: 0.1.0
 homepage: https://github.com/eddyuan/privacy_screen.git
 
 environment:
-  sdk: '>=2.17.6 <4.0.0'
-  flutter: '>=2.5.0'
+  sdk: ^3.6.0
+  flutter: '>=3.3.0'
 
 dependencies:
   flutter:
@@ -15,7 +15,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
+  flutter_lints: ^6.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -38,7 +38,7 @@ flutter:
         package: ca.couver.privacy_screen
         pluginClass: PrivacyScreenPlugin
       ios:
-        pluginClass: PrivacyScreenPlugin
+        pluginClass: SwiftPrivacyScreenPlugin
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
