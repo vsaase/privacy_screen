@@ -1,19 +1,6 @@
 group 'ca.couver.privacy_screen'
 version '1.0-SNAPSHOT'
 
-buildscript {
-    ext.kotlin_version = '2.2.20'
-    repositories {
-        google()
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath 'com.android.tools.build:gradle:8.11.1'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
-}
-
 rootProject.allprojects {
     repositories {
         google()
@@ -22,7 +9,6 @@ rootProject.allprojects {
 }
 
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
 
 android {
     // conditional for compatibility with older gradle versions
@@ -30,15 +16,11 @@ android {
         namespace 'ca.couver.privacy_screen'
     }
     namespace 'ca.couver.privacy_screen'
-    compileSdkVersion 36
+    compileSdk = 36
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
-    }
-
-    kotlinOptions {
-        jvmTarget = '17'
     }
 
     sourceSets {
@@ -47,6 +29,12 @@ android {
 
     defaultConfig {
         minSdkVersion 21
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
     }
 }
 

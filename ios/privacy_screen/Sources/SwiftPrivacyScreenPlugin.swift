@@ -16,6 +16,7 @@ public class SwiftPrivacyScreenPlugin: NSObject, FlutterPlugin {
   var autoLockAfterSeconds: Double = -1
   var blurEffect: UIBlurEffect.Style?
   var lockedDismissDelay: CFTimeInterval = 0.2
+  private var lifecycleObservers: [NSObjectProtocol] = []
 
   internal let registrar: FlutterPluginRegistrar
 
@@ -24,7 +25,13 @@ public class SwiftPrivacyScreenPlugin: NSObject, FlutterPlugin {
     methodChannel = FlutterMethodChannel(
       name: "channel.couver.privacy_screen", binaryMessenger: registrar.messenger())
     super.init()
-    registrar.addApplicationDelegate(self)
+    registerSceneLifecycleObservers()
+  }
+
+  deinit {
+    for observer in lifecycleObservers {
+      NotificationCenter.default.removeObserver(observer)
+    }
   }
 
   public static func register(with registrar: FlutterPluginRegistrar) {
@@ -36,7 +43,8 @@ public class SwiftPrivacyScreenPlugin: NSObject, FlutterPlugin {
     if let window = UIApplication.shared.connectedScenes
       .compactMap({ $0 as? UIWindowScene })
       .flatMap(\.windows)
-      .first(where: \.isKeyWindow) {
+      .first(where: \.isKeyWindow)
+    {
       dismissPrivacyView()
       privacyUIView = UIView(frame: window.bounds)
       privacyUIView?.alpha = 0.0
@@ -89,8 +97,9 @@ public class SwiftPrivacyScreenPlugin: NSObject, FlutterPlugin {
 
   private func judgeLock() {
     let nowTime = NSDate().timeIntervalSince1970
-    if autoLockAfterSeconds >= 0 && timeEnteredBackground > 0 &&
-      nowTime - timeEnteredBackground > autoLockAfterSeconds {
+    if autoLockAfterSeconds >= 0 && timeEnteredBackground > 0
+      && nowTime - timeEnteredBackground > autoLockAfterSeconds
+    {
       methodChannel.invokeMethod("lock", arguments: nil)
       DispatchQueue.main.asyncAfter(deadline: .now() + lockedDismissDelay) {
         self.dismissPrivacyView()
@@ -101,21 +110,47 @@ public class SwiftPrivacyScreenPlugin: NSObject, FlutterPlugin {
     timeEnteredBackground = 0
   }
 
-  public func applicationDidBecomeActive(_ application: UIApplication) {
+  private func registerSceneLifecycleObservers() {
+    let notificationCenter = NotificationCenter.default
+    lifecycleObservers = [
+      notificationCenter.addObserver(
+        forName: UIScene.didActivateNotification, object: nil, queue: .main
+      ) { [weak self] _ in
+        self?.sceneDidBecomeActive()
+      },
+      notificationCenter.addObserver(
+        forName: UIScene.didEnterBackgroundNotification, object: nil, queue: .main
+      ) { [weak self] _ in
+        self?.sceneDidEnterBackground()
+      },
+      notificationCenter.addObserver(
+        forName: UIScene.willEnterForegroundNotification, object: nil, queue: .main
+      ) { [weak self] _ in
+        self?.sceneWillEnterForeground()
+      },
+      notificationCenter.addObserver(
+        forName: UIScene.willDeactivateNotification, object: nil, queue: .main
+      ) { [weak self] _ in
+        self?.sceneWillResignActive()
+      },
+    ]
+  }
+
+  private func sceneDidBecomeActive() {
     methodChannel.invokeMethod("onLifeCycle", arguments: "applicationDidBecomeActive")
     judgeLock()
   }
 
-  public func applicationDidEnterBackground(_ application: UIApplication) {
+  private func sceneDidEnterBackground() {
     if lockWithDidEnterBackground { timeEnteredBackground = NSDate().timeIntervalSince1970 }
     methodChannel.invokeMethod("onLifeCycle", arguments: "applicationDidEnterBackground")
   }
 
-  public func applicationWillEnterForeground(_ application: UIApplication) {
+  private func sceneWillEnterForeground() {
     methodChannel.invokeMethod("onLifeCycle", arguments: "applicationWillEnterForeground")
   }
 
-  public func applicationWillResignActive(_ application: UIApplication) {
+  private func sceneWillResignActive() {
     if !lockWithDidEnterBackground { timeEnteredBackground = NSDate().timeIntervalSince1970 }
     methodChannel.invokeMethod("onLifeCycle", arguments: "applicationWillResignActive")
     if enablePrivacy {
