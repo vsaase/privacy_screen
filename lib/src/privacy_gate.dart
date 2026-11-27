@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:privacy_screen/src/privacy_lock.dart';
 import 'privacy_helpers.dart';
 import 'privacy_screen.dart';

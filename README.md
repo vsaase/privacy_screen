@@ -273,7 +273,7 @@ When calling `instance.enable()`, configurations can be provided:
 ### Full Example (Because you all want to see in Readme)
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:privacy_screen/privacy_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 
